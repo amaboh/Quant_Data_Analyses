@@ -1,0 +1,94 @@
+---
+title: "indeLab_QA3"
+author: "Amabohh"
+date: "2022-10-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("magrittr")
+library("tidyverse")
+library("patchwork")
+```
+
+Hypotheses.
+1. (a)
+A company produces synthetic diamonds that have an mean weight of 0.5 carat.
+
+$H_0: \mu=0.5$ and $H_1: \mu \gt 0.5$
+```{r}
+diamonds <- c(0.46, 0.61, 0.52, 0.48, 0.57,0.54)
+summary(diamonds)
+t.test(diamonds, mu = 0.5, alternative="greater")
+```
+The hypotheses to test are $H_0: \mu=0.5$ and $H_1: \mu \gt 0.5$
+```{r}
+?t.test
+rnorm(diamonds, mean= 0.5, sd=1)
+t.test(diamonds, mu= 0.5, conf.level = 0.99, alternative ="greater")
+```
+
+
+Using the data on breast cancer diagnosis from the University of Wisconsin
+
+(a) Read in the data set breastCancer Wissonsin.csv. This is a sample of data on Breast Cancer.
+
+```{r}
+cancer <- read.csv("Data/BreastCancer_Wisconsin.csv")
+
+```
+(b) Explore the data and the variables. You can do this through the use of numerical sum- maries and graphs.
+
+```{r}
+summary(cancer)
+head(cancer)
+plot(cancer)
+
+attach(cancer)
+names(cancer)
+
+class(diagnosis)
+```
+
+(c) Compute the proportion of tumours classified as benign (b) in the sample data you read in in step (a)
+```{r}
+table(cancer$diagnosis == "B")
+table(cancer$diagnosis)
+```
+
+(d) The proportion of benign tumours in the population from which this sample data is drawn from is 0.6. Is the proportion in this sample data supportive of this proportion in the population? Write out the hypothesis to test and run this hypothesis test in R. Is H0 rejected when α = 0.05?
+
+The hypotheses to test are $H_0: \mu=0.6$ and $H_1: \mu \ne 0.5$
+```{r}
+prop.test(357,569, p= 0.6, alt="two.sided")
+```
+
+(e) Explore the radius.mean attribute (column) in the data. Do so numerically and graph- ically.
+
+```{r}
+summary(cancer$radius.mean)
+hist(cancer$radius.mean, main="Histogram of Cancer Radius Mean")
+```
+(f) Is there a significant difference between the radius mean for benign vs malignant? (Hint: use both numerical and visual clues)
+
+```{r}
+cancer %>%
+  filter(diagnosis %in% c("M", "B")) %>%
+  t.test(radius.mean ~ diagnosis, data = ., alt="two.sided")
+
+cancer_B <- subset(cancer, cancer$diagnosis == "B")
+cancer_M <- subset(cancer, cancer$diagnosis == "M")
+View(cancer_B)
+
+
+boxplot(radius.mean ~ diagnosis)
+
+```
+
+
+(g) in step (c) you computed the proportion of tumours classified as benign. What is the 95% confidence interval for this proportion?
+```{r}
+prop.test(357,569, p= 0.5, alt="two.sided", conf.level = 0.95)
+```
+
